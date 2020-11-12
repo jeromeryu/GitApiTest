@@ -50,7 +50,6 @@ class MainActivity : AppCompatActivity() {
             if(checkVersion()){
                 Toast.makeText(applicationContext, "다운로드를 진행합니다.", Toast.LENGTH_SHORT).show()
                 download()
-                install()
             } else {
                 Toast.makeText(applicationContext, "이미 최신 버전입니다", Toast.LENGTH_SHORT).show()
             }
@@ -89,15 +88,11 @@ class MainActivity : AppCompatActivity() {
 
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {
-
                     val fileName=latestUrl.substring(latestUrl.lastIndexOf("/")+1)
-//                    val saveDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath
                     savePath = application.filesDir.absolutePath+"/"+fileName
-//                    savePath = saveDir + fileName
-
                     Log.e("path", savePath)
                     saveFile(response.body(), savePath)
-
+                    install()
                 }
             }
         })
