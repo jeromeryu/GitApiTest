@@ -24,7 +24,8 @@ interface GithubService {
 data class Release(
     @SerializedName("url") val url: String,
     @SerializedName("id") val id: Int,
-    @SerializedName("assets") val assets : List<Assets>
+    @SerializedName("assets") val assets : List<Assets>,
+    @SerializedName("name") val name : String
 )
 
 data class Assets(

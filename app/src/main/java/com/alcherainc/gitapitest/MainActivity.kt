@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import com.alcherainc.gitapitest.databinding.ActivityMainBinding
@@ -15,6 +16,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.*
 import java.net.URI
+import kotlin.math.max
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,6 +24,7 @@ class MainActivity : AppCompatActivity() {
 
     var latestUrl = ""
     var savePath = ""
+    var latestVersion = "" //앞에 v붙여둠
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +34,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(view)
 
         initUI(binding)
+
+
     }
 
     private fun initUI(binding: ActivityMainBinding){
@@ -42,12 +47,13 @@ class MainActivity : AppCompatActivity() {
         binding.tvVersionName.text = name
 
         binding.btnDownload.setOnClickListener{
-            download()
-//            install()
-        }
-
-        binding.btnInstall.setOnClickListener{
-            install()
+            if(checkVersion()){
+                Toast.makeText(applicationContext, "다운로드를 진행합니다.", Toast.LENGTH_SHORT).show()
+                download()
+                install()
+            } else {
+                Toast.makeText(applicationContext, "이미 최신 버전입니다", Toast.LENGTH_SHORT).show()
+            }
         }
 
         val iGithub = GithubClient.getApi().create(GithubService::class.java)
@@ -65,6 +71,7 @@ class MainActivity : AppCompatActivity() {
                     val data = response.body()
                     Log.e("body", data.toString())
                     latestUrl = data!!.assets[0].browser_download_url
+                    latestVersion = data!!.name
                 } else {
                     Log.e("res fail", response.toString())
                 }
@@ -147,6 +154,27 @@ class MainActivity : AppCompatActivity() {
         openFileIntent.setDataAndType(uri, "application/vnd.android.package-archive")
         startActivity(openFileIntent)
         finish()
-
     }
+
+    private fun checkVersion() : Boolean{
+        val currentVersionSplit = BuildConfig.VERSION_NAME.split(".")
+        val latestVersionSplit = latestVersion.substring(1).split(".")
+
+        val length = max(currentVersionSplit.size, latestVersionSplit.size)
+        var chk = 0
+        for(i in 0 until length){
+            var c = if(i < currentVersionSplit.size) currentVersionSplit[i].toInt() else 0
+            var l = if(i < latestVersionSplit.size) latestVersionSplit[i].toInt() else 0
+            if(c<=l){
+                chk += l - c
+            } else {
+                if(chk<=0){
+                    return false
+                }
+            }
+        }
+
+        return chk > 0
+    }
+
 }
