@@ -6,10 +6,15 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class GithubClient {
     companion object {
-        private const val BASE_URL = "https://api.github.com"
+        private const val BASE_URL = "https://api.github.com/"
         fun getApi(): Retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        fun getDownloadApi() : Retrofit = Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create())
+            .baseUrl(BASE_URL)
             .build()
     }
 }

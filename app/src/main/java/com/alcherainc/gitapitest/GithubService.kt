@@ -1,19 +1,37 @@
 package com.alcherainc.gitapitest
 
 import com.google.gson.annotations.SerializedName
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.GET
-import retrofit2.http.Path
+import retrofit2.http.Headers
+import retrofit2.http.Query
+import retrofit2.http.Url
+
 
 interface GithubService {
 
-    @GET("users/AlcheraInc/cpp-service-template")
-    fun getRepos() : Call<String>
+    @Headers("Accept: application/vnd.github.v3+json")
+    @GET("repos/jeromeryu/GitApiTest/releases/latest")
+    fun getRepos() : Call<Release>
+
+    @Headers("Accept: application/vnd.github.v3+json")
+    @GET
+    fun download(@Url url:String) : Call<ResponseBody>
+
 }
 
-data class GithubRepo(
-    @SerializedName("name") val name: String,
-    @SerializedName("id") val id: String,
-    @SerializedName("created_at") val date: String,
-    @SerializedName("html_url") val url: String
+data class Release(
+    @SerializedName("url") val url: String,
+    @SerializedName("id") val id: Int,
+    @SerializedName("assets") val assets : List<Assets>
+)
+
+data class Assets(
+    @SerializedName("url") val url: String,
+    @SerializedName("browser_download_url") val browser_download_url: String
+)
+
+data class result(
+    @SerializedName("code") val code : Int
 )
