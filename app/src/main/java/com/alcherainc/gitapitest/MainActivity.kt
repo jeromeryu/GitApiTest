@@ -131,6 +131,10 @@ class MainActivity : AppCompatActivity() {
 
     fun install(){
         val file = File(savePath)
+        Log.e("tag", file.exists().toString())
+        if(!file.exists()){
+            Log.e("tag", "file does not exist")
+        }
         val uri = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
             FileProvider.getUriForFile(applicationContext, BuildConfig.APPLICATION_ID + ".fileprovider", file)
         } else{
